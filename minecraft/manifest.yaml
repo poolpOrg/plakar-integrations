@@ -1,0 +1,17 @@
+name: minecraft
+display_name: Minecraft Server
+description: Back up and restore a Minecraft server, pausing world saves over RCON while the backup runs.
+homepage: https://github.com/poolpOrg/plakar-integrations/tree/main/minecraft
+license: ISC
+api_version: v1.1.0
+connectors:
+- type: importer
+  executable: minecraft-importer
+  validator: ./plugin/importer/minecraft.json
+  protocols: [minecraft]
+  class: service
+- type: exporter
+  executable: minecraft-exporter
+  validator: ./plugin/exporter/minecraft.json
+  protocols: [minecraft]
+  class: service

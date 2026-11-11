@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Minecraft Server Importer Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "description": "minecraft://<server directory>, the one holding server.properties and the worlds"
+    },
+    "quiesce": {
+      "type": "boolean",
+      "description": "Pause world saves over RCON while the backup runs; refuses to back up a running server that cannot be paused",
+      "default": true
+    },
+    "rcon": {
+      "type": "string",
+      "description": "host:port of the RCON console, read from server.properties when omitted"
+    },
+    "timeout": {
+      "type": "string",
+      "description": "Time allowed for each RCON exchange, such as 5m",
+      "default": "5m"
+    },
+    "dont_traverse_fs": {
+      "type": "boolean",
+      "description": "Do not follow mount points under the server directory",
+      "default": false
+    }
+  }
+}
