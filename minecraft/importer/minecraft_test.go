@@ -21,6 +21,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -122,8 +123,10 @@ func TestBackupPausesSaving(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, []string{"save-off", "save-all flush", "save-on"}, srv.Commands())
 
-	require.Contains(t, seen, filepath.ToSlash(filepath.Join(dir, "world", "region", "r.0.0.mca")))
-	require.Contains(t, seen, filepath.ToSlash(filepath.Join(dir, "server.properties")))
+	// records carry the path the way the fs importer spells it,
+	// which on windows drops the drive colon
+	require.Contains(t, seen, path.Join(imp.Root(), "world", "region", "r.0.0.mca"))
+	require.Contains(t, seen, path.Join(imp.Root(), "server.properties"))
 
 	// Close has nothing left to do
 	require.NoError(t, imp.Close(t.Context()))
@@ -206,7 +209,7 @@ func TestStoppedServer(t *testing.T) {
 
 	seen, err := runImport(t, imp, nil)
 	require.NoError(t, err)
-	require.Contains(t, seen, filepath.ToSlash(filepath.Join(dir, "world", "level.dat")))
+	require.Contains(t, seen, path.Join(imp.Root(), "world", "level.dat"))
 }
 
 func TestRconDisabledServerStopped(t *testing.T) {
