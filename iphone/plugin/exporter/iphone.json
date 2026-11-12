@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar iPhone Exporter Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "pattern": "^iphone://([0-9A-Fa-f]{40}|[0-9A-Fa-f]{8}-[0-9A-Fa-f]{16})?/?$",
+      "description": "iphone:// for the only connected device, or iphone://<udid>"
+    },
+    "device_id": {
+      "type": "string",
+      "pattern": "^([0-9A-Fa-f]{40}|[0-9A-Fa-f]{8}-[0-9A-Fa-f]{16})$",
+      "description": "UDID of the device to restore to, an alternative to naming it in the location"
+    },
+    "working_directory": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Directory the backup is materialized in before being restored; defaults to <user cache dir>/plakar/iphone"
+    },
+    "confirm": {
+      "type": "boolean",
+      "default": false,
+      "description": "Restore onto the device once the backup directory is complete. Without it the directory is written and the command to run is printed."
+    },
+    "backup_password": {
+      "type": "string",
+      "description": "Password of an encrypted backup. The BACKUP_PASSWORD environment variable is honoured as well."
+    },
+    "restore_system": {
+      "type": "boolean",
+      "default": false,
+      "description": "Restore system files too"
+    },
+    "restore_settings": {
+      "type": "boolean",
+      "default": false,
+      "description": "Restore device settings from the backup"
+    },
+    "remove_items": {
+      "type": "boolean",
+      "default": false,
+      "description": "Remove items on the device that are not in the backup"
+    },
+    "no_reboot": {
+      "type": "boolean",
+      "default": false,
+      "description": "Do not reboot the device after the restore"
+    },
+    "skip_apps": {
+      "type": "boolean",
+      "default": false,
+      "description": "Do not reinstall apps after the restore"
+    },
+    "pairing_timeout": {
+      "type": "string",
+      "default": "60s",
+      "description": "How long to wait for the Trust dialog to be accepted on the device"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+name: iphone
+display_name: iPhone and iPad
+description: Back up and restore iPhones and iPads over USB through Apple's backup service, using libimobiledevice.
+homepage: https://github.com/poolpOrg/plakar-integrations/tree/main/iphone
+license: ISC
+api_version: v1.1.0
+connectors:
+- type: importer
+  executable: iphone-importer
+  validator: ./plugin/importer/iphone.json
+  protocols: [iphone]
+- type: exporter
+  executable: iphone-exporter
+  validator: ./plugin/exporter/iphone.json
+  protocols: [iphone]

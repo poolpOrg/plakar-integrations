@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar iPhone Importer Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "pattern": "^iphone://([0-9A-Fa-f]{40}|[0-9A-Fa-f]{8}-[0-9A-Fa-f]{16})?/?$",
+      "description": "iphone:// for the only connected device, or iphone://<udid>"
+    },
+    "device_id": {
+      "type": "string",
+      "pattern": "^([0-9A-Fa-f]{40}|[0-9A-Fa-f]{8}-[0-9A-Fa-f]{16})$",
+      "description": "UDID of the device to back up, an alternative to naming it in the location"
+    },
+    "working_directory": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Directory the device backup is staged in and kept between runs for incremental backups; defaults to <user cache dir>/plakar/iphone"
+    },
+    "full_backup": {
+      "type": "boolean",
+      "default": false,
+      "description": "Force a full backup instead of an incremental one"
+    },
+    "pairing_timeout": {
+      "type": "string",
+      "default": "60s",
+      "description": "How long to wait for the Trust dialog to be accepted on the device"
+    }
+  }
+}
