@@ -1,0 +1,19 @@
+name: android
+display_name: Android (USB)
+description: Back up and restore the shared storage of Android phones and tablets over USB debugging (adb).
+homepage: https://github.com/poolpOrg/plakar-integrations/tree/main/android
+license: ISC
+api_version: v1.1.0
+tier: official
+contact: mailto:help@plakar.io
+connectors:
+- type: importer
+  executable: android-importer
+  validator: ./plugin/importer/android.json
+  protocols: [android]
+  class: file-storage
+- type: exporter
+  executable: android-exporter
+  validator: ./plugin/exporter/android.json
+  protocols: [android]
+  class: file-storage

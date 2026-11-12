@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Android Exporter Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "description": "android://[serial][/path]: the device to restore to and the device directory to restore into (defaults to a new plakar-restore-<timestamp> directory at the top of the shared storage)",
+      "pattern": "^android://[A-Za-z0-9._:\\[\\]-]*(/.*)?$"
+    },
+    "serial": {
+      "type": "string",
+      "description": "adb serial of the device, as shown by 'adb devices'; same as putting it in the location"
+    },
+    "destination_path": {
+      "type": "string",
+      "description": "Absolute device directory to restore into; overrides the path in the location"
+    },
+    "overwrite": {
+      "type": "boolean",
+      "default": false,
+      "description": "Replace files that already exist on the device with different content; by default they are reported as errors"
+    },
+    "allow_any_path": {
+      "type": "boolean",
+      "default": false,
+      "description": "Allow a destination outside the shared storage (/storage, /sdcard, /data/local/tmp)"
+    },
+    "adb_server": {
+      "type": "string",
+      "description": "host:port of the adb server (default 127.0.0.1:5037, or ANDROID_ADB_SERVER_PORT)"
+    },
+    "start_server": {
+      "type": "boolean",
+      "default": true,
+      "description": "Run 'adb start-server' when no adb server answers on a local address"
+    },
+    "streams": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16,
+      "default": 4,
+      "description": "Number of parallel file transfers over the adb link"
+    }
+  }
+}
