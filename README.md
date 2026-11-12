@@ -5,3 +5,4 @@ directory. Each lives on its own `integration/<name>` branch, where the
 pull requests go; `main` receives the merges and the release tags.
 
 - [minecraft](minecraft/): back up and restore a Minecraft server
+- [nextcloud](nextcloud/): back up and restore the files of a Nextcloud user

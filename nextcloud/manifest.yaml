@@ -1,0 +1,17 @@
+name: nextcloud
+display_name: Nextcloud
+description: backup and restore the files of a Nextcloud user, with its trash bin and file versions
+homepage: https://github.com/poolpOrg/plakar-integrations/tree/main/nextcloud
+license: ISC
+api_version: v1.1.0
+connectors:
+  - type: importer
+    executable: ./nextcloud-importer
+    validator: ./plugin/importer/schema.json
+    protocols: [nextcloud]
+    class: file-storage
+  - type: exporter
+    executable: ./nextcloud-exporter
+    validator: ./plugin/exporter/schema.json
+    protocols: [nextcloud]
+    class: file-storage

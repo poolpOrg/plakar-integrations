@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Nextcloud Exporter Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location",
+    "username",
+    "password"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "pattern": "^nextcloud://",
+      "description": "nextcloud://host[:port][/folder], the folder being relative to the user's files and created when missing"
+    },
+    "username": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Nextcloud login name"
+    },
+    "password": {
+      "type": "string",
+      "minLength": 1,
+      "description": "App password of the user, see Settings > Security"
+    },
+    "prefix": {
+      "type": "string",
+      "description": "URL path Nextcloud is installed under, for example /nextcloud",
+      "default": "/"
+    },
+    "insecure": {
+      "type": "boolean",
+      "description": "Talk plain HTTP to the server",
+      "default": false
+    }
+  }
+}
