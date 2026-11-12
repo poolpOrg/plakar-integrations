@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar n8n Exporter Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "description": "n8n instance: n8n://[<api_key>@]host[:port][/prefix]",
+      "pattern": "^n8n://"
+    },
+    "api_key": {
+      "type": "string",
+      "minLength": 1,
+      "description": "n8n API key (falls back to the N8N_API_KEY environment variable). Cannot be used if the key is already in the location userinfo."
+    },
+    "scheme": {
+      "type": "string",
+      "enum": ["http", "https"],
+      "default": "https",
+      "description": "Protocol used to reach the instance."
+    },
+    "activate": {
+      "type": "boolean",
+      "default": false,
+      "description": "Re-activate workflows that were active when the snapshot was taken."
+    },
+    "timeout": {
+      "type": "string",
+      "default": "60s",
+      "description": "Per-request timeout as a Go duration (e.g. 30s, 2m)."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "location": {
+            "type": "string",
+            "pattern": "^n8n://[^/@]+@"
+          }
+        },
+        "required": [
+          "location"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "api_key"
+          ]
+        }
+      }
+    }
+  ]
+}
