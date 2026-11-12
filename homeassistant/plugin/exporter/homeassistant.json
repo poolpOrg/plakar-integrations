@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Home Assistant Exporter Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "description": "homeassistant://host[:port], the port defaults to 8123"
+    },
+    "token": {
+      "type": "string",
+      "description": "Long-lived access token of an administrator, read from PLAKAR_HOMEASSISTANT_TOKEN when omitted"
+    },
+    "tls": {
+      "type": "boolean",
+      "description": "Reach the instance over HTTPS",
+      "default": false
+    },
+    "agent": {
+      "type": "string",
+      "description": "Backup agent to upload to, the local one (backup.local or hassio.local) when omitted"
+    },
+    "password": {
+      "type": "string",
+      "description": "Password of the backup, needed to restore members that were encrypted when imported"
+    },
+    "restore": {
+      "type": "boolean",
+      "description": "Have the instance restore the backup once uploaded, which restarts it",
+      "default": false
+    }
+  }
+}

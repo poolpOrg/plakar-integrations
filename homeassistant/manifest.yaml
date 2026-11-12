@@ -1,0 +1,17 @@
+name: homeassistant
+display_name: Home Assistant
+description: Back up and restore a Home Assistant instance through its backup API.
+homepage: https://github.com/poolpOrg/plakar-integrations/tree/main/homeassistant
+license: ISC
+api_version: v1.1.0
+connectors:
+- type: importer
+  executable: homeassistant-importer
+  validator: ./plugin/importer/homeassistant.json
+  protocols: [homeassistant]
+  class: service
+- type: exporter
+  executable: homeassistant-exporter
+  validator: ./plugin/exporter/homeassistant.json
+  protocols: [homeassistant]
+  class: service

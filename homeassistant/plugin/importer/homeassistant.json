@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Home Assistant Importer Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "description": "homeassistant://host[:port], the port defaults to 8123"
+    },
+    "token": {
+      "type": "string",
+      "description": "Long-lived access token of an administrator, read from PLAKAR_HOMEASSISTANT_TOKEN when omitted"
+    },
+    "tls": {
+      "type": "boolean",
+      "description": "Reach the instance over HTTPS",
+      "default": false
+    },
+    "agent": {
+      "type": "string",
+      "description": "Backup agent to use, the local one (backup.local or hassio.local) when omitted"
+    },
+    "backup": {
+      "type": "string",
+      "description": "Import this existing backup instead of making a new one"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the backup made on the instance, 'plakar <timestamp>' when omitted"
+    },
+    "password": {
+      "type": "string",
+      "description": "Encrypt the backup on the instance with this password, and decrypt protected backups with it"
+    },
+    "database": {
+      "type": "boolean",
+      "description": "Include the recorder database",
+      "default": true
+    },
+    "addons": {
+      "type": "boolean",
+      "description": "Include every add-on, supervised installs only",
+      "default": true
+    },
+    "folders": {
+      "type": "string",
+      "description": "Comma-separated shared folders to include, supervised installs only",
+      "default": "media,share,ssl,addons/local"
+    },
+    "delete": {
+      "type": "boolean",
+      "description": "Remove the backup from the instance once it has been imported",
+      "default": false
+    }
+  }
+}
