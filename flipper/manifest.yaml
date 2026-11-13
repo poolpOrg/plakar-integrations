@@ -1,0 +1,22 @@
+name: flipper
+display_name: Flipper Zero
+description: Back up, restore and store klosets on a Flipper Zero over its USB RPC.
+homepage: https://github.com/poolpOrg/plakar-integrations/tree/main/flipper
+license: ISC
+api_version: v1.1.0
+connectors:
+- type: importer
+  executable: flipper-importer
+  validator: ./plugin/importer/flipper.json
+  protocols: [flipper]
+  class: file-storage
+- type: exporter
+  executable: flipper-exporter
+  validator: ./plugin/exporter/flipper.json
+  protocols: [flipper]
+  class: file-storage
+- type: storage
+  executable: flipper-storage
+  validator: ./plugin/storage/flipper.json
+  protocols: [flipper]
+  class: file-storage

@@ -1,0 +1,6 @@
+These protocol definitions come from https://github.com/flipperdevices/flipperzero-protobuf
+(commit 1c84fa48919cbb71d1cc65236fc0ee36740e24c6), Copyright (c) Flipper Devices Inc.,
+published under the MIT license.  The only change is the "flipperzero/" prefix on the
+import lines, so that the generated code registers its descriptors under a path that
+cannot collide with other "storage.proto" or "system.proto" files linked into the
+same program.

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Flipper Zero Importer Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "description": "flipper://[device-name]/<path on the device>, /ext is the SD card, /int the internal flash"
+    },
+    "port": {
+      "type": "string",
+      "description": "Serial port of the device, autodetected over USB when omitted"
+    },
+    "md5": {
+      "type": "boolean",
+      "description": "Ask the device for the MD5 of each file so that unchanged files are skipped",
+      "default": true
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Flipper Zero Exporter Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "description": "flipper://[device-name]/<path on the device> to restore into"
+    },
+    "port": {
+      "type": "string",
+      "description": "Serial port of the device, autodetected over USB when omitted"
+    }
+  }
+}
