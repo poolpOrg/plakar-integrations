@@ -33,9 +33,10 @@ func collect(t *testing.T, config map[string]string) (map[string][]byte, map[str
 	records := make(chan *integration.Record, 256)
 	results := make(chan *integration.Result, 256)
 
-	var importErr error
+	importErr := make(chan error, 1)
 	go func() {
-		_, importErr = imp.Import(context.Background(), records, results)
+		_, err := imp.Import(context.Background(), records, results)
+		importErr <- err
 	}()
 
 	contents := make(map[string][]byte)
@@ -58,8 +59,8 @@ func collect(t *testing.T, config map[string]string) (map[string][]byte, map[str
 		}
 	}
 
-	if importErr != nil {
-		t.Fatalf("Import: %v", importErr)
+	if err := <-importErr; err != nil {
+		t.Fatalf("Import: %v", err)
 	}
 
 	return contents, modes, errs
