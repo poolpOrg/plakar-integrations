@@ -1,0 +1,10 @@
+name: docker
+display_name: Docker
+description: Integration providing import capabilities from Docker images.
+homepage: https://github.com/poolpOrg/plakar-integrations/tree/main/docker
+license: ISC
+connectors:
+- type: importer
+  executable: dockerImporter
+  protocols: [docker+container, docker+image]
+  validator: ./plugin/importer/schema.json
