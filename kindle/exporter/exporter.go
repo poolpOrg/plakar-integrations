@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -133,16 +134,10 @@ func (p *KindleExporter) store(ctx context.Context, record *integration.Record) 
 // resolve maps a snapshot pathname onto the device, refusing anything that
 // would write outside the volume or into a protected area.
 func (p *KindleExporter) resolve(pathname string) (string, error) {
-	clean := filepath.Clean("/" + filepath.FromSlash(pathname))
-	rel := strings.TrimPrefix(filepath.ToSlash(clean), "/")
+	rel := strings.TrimPrefix(path.Clean("/"+pathname), "/")
 
-	if rel == "" || rel == "." {
+	if rel == "" {
 		return p.volume.Root, nil
-	}
-
-	// Clean collapses ".." that tried to escape, but a leading one survives.
-	if rel == ".." || strings.HasPrefix(rel, "../") {
-		return "", fmt.Errorf("refusing to restore outside the device: %s", pathname)
 	}
 
 	if !p.system {
@@ -153,7 +148,14 @@ func (p *KindleExporter) resolve(pathname string) (string, error) {
 		}
 	}
 
-	return filepath.Join(p.volume.Root, filepath.FromSlash(rel)), nil
+	// Clean collapsed any "..", but on Windows a backslash in a snapshot
+	// pathname is a separator Join honours too.
+	abspath := filepath.Join(p.volume.Root, filepath.FromSlash(rel))
+	if !strings.HasPrefix(abspath, p.volume.Root+string(filepath.Separator)) {
+		return "", fmt.Errorf("refusing to restore outside the device: %s", pathname)
+	}
+
+	return abspath, nil
 }
 
 // writeFile writes through a temporary file so an interrupted restore leaves
