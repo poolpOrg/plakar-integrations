@@ -1,0 +1,117 @@
+.Dd August 11, 2026
+.Dt PLAKAR-KINDLE 1
+.Os
+.Sh NAME
+.Nm plakar-kindle
+.Nd Kindle integration for plakar
+.Sh DESCRIPTION
+The
+.Nm kindle
+integration backs up the contents of a Kindle e-reader attached over USB into a
+Kloset repository, and restores them onto a device.
+.Pp
+It covers what Amazon's cloud sync does not: side-loaded books, the annotations
+attached to them, and
+.Pa My Clippings.txt ,
+all of which exist only on the device itself.
+.Sh CONFIGURATION
+.Bl -tag -width Ds
+.It Cm location
+Required.
+.Pa kindle://
+to auto-detect the attached device, or
+.Pa kindle:///path/to/mountpoint
+to name it explicitly.
+An explicit path is needed when several Kindles are attached, when the device is
+mounted over MTP or FUSE, or when working from a copy of a Kindle tree on disk.
+.El
+.Pp
+Importer only:
+.Bl -tag -width Ds
+.It Cm documents
+Back up the books.
+Defaults to
+.Dv true .
+.It Cm annotations
+Back up the
+.Pa .sdr
+sidecar directories, holding highlights, bookmarks and reading positions, plus
+.Pa My Clippings.txt .
+Defaults to
+.Dv true .
+.It Cm system
+Back up the device's
+.Pa system
+directory: collections and settings.
+Defaults to
+.Dv false ,
+as these describe one specific device.
+.It Cm everything
+Back up the whole volume verbatim, caches included, ignoring the options above.
+Defaults to
+.Dv false .
+.El
+.Pp
+Exporter only:
+.Bl -tag -width Ds
+.It Cm system
+Allow restoring into the device's
+.Pa system
+directory.
+Defaults to
+.Dv false ,
+because those files describe one particular device and overwriting them with
+another Kindle's settings can confuse the firmware.
+.El
+.Pp
+Thumbnails and search indexes are always excluded unless
+.Cm everything
+is set: they are large, the device rebuilds them on demand, and they are
+meaningless on a different one.
+.Sh CONNECTING THE DEVICE
+Kindles up to the Paperwhite 3, and the Basic through its 10th generation, mount
+as a removable volume and are found automatically.
+.Pp
+The Paperwhite 4 onwards, the Oasis, the Scribe and the Colorsoft use MTP, which
+is not a filesystem and must be mounted first.
+On Linux, gvfs mounts such devices under
+.Ev XDG_RUNTIME_DIR Pa /gvfs ,
+which is searched automatically;
+.Xr jmtpfs 1
+and
+.Xr simple-mtpfs 1
+are alternatives.
+macOS has no MTP support, so a third-party client is required.
+.Sh EXAMPLES
+Back up the attached Kindle:
+.Bd -literal -offset indent
+$ plakar source add mykindle kindle://
+$ plakar at /var/backups/kindle backup @mykindle
+.Ed
+.Pp
+Back up books without annotations:
+.Bd -literal -offset indent
+$ plakar source add books kindle:// annotations=false
+.Ed
+.Pp
+Restore onto a device:
+.Bd -literal -offset indent
+$ plakar destination add newkindle kindle://
+$ plakar at /var/backups/kindle restore -to @newkindle <snapid>
+.Ed
+.Sh NOTES
+Restores are written through a temporary file and renamed into place, so a
+Kindle unplugged mid-transfer keeps the previous copy of a book rather than a
+truncated one.
+.Pp
+Ownership and permissions are normalised rather than preserved: a Kindle's
+filesystem carries neither, and what the operating system synthesises depends on
+the mount options of whoever attached it.
+.Pp
+Books bought from Amazon are DRM-protected and tied to the purchasing account.
+They are backed up and restored faithfully, but a restored copy is readable only
+on a device registered to that account.
+.Sh SEE ALSO
+.Xr plakar 1 ,
+.Xr plakar-backup 1 ,
+.Xr plakar-restore 1

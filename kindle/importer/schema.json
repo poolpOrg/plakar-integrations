@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Kindle Importer Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "description": "Kindle location URI: kindle:// to auto-detect the attached device, or kindle:///path/to/mountpoint to name it explicitly",
+      "pattern": "^kindle://"
+    },
+    "documents": {
+      "type": "boolean",
+      "default": true,
+      "description": "Back up the books stored on the device"
+    },
+    "annotations": {
+      "type": "boolean",
+      "default": true,
+      "description": "Back up highlights, bookmarks, reading positions (the .sdr sidecar directories) and My Clippings.txt"
+    },
+    "system": {
+      "type": "boolean",
+      "default": false,
+      "description": "Back up the device's system directory (collections, settings). Device-specific, and excludes regenerable caches such as thumbnails and search indexes"
+    },
+    "everything": {
+      "type": "boolean",
+      "default": false,
+      "description": "Back up the whole volume verbatim, caches included, ignoring the selection above"
+    }
+  }
+}

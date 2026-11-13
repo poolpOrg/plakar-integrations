@@ -5,3 +5,4 @@ directory. Each lives on its own `integration/<name>` branch, where the
 pull requests go; `main` receives the merges and the release tags.
 
 - [minecraft](minecraft/): back up and restore a Minecraft server
+- [kindle](kindle/): back up and restore a Kindle e-reader connected over USB

@@ -1,0 +1,23 @@
+name: kindle
+display_name: Kindle
+description: Integration providing import and export capabilities for Kindle e-readers connected over USB.
+homepage: https://github.com/poolpOrg/plakar-integrations/tree/main/kindle
+license: ISC
+api_version: v1.1.0
+tier: official
+contact: mailto:help@plakar.io
+connectors:
+- type: importer
+  executable: kindleImporter
+  homepage: https://github.com/poolpOrg/plakar-integrations/tree/main/kindle
+  license: ISC
+  protocols: [kindle]
+  validator: ./importer/schema.json
+  class: file-storage
+- type: exporter
+  executable: kindleExporter
+  homepage: https://github.com/poolpOrg/plakar-integrations/tree/main/kindle
+  license: ISC
+  protocols: [kindle]
+  validator: ./exporter/schema.json
+  class: file-storage

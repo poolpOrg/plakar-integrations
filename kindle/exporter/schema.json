@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Kindle Exporter Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "description": "Kindle location URI: kindle:// to auto-detect the attached device, or kindle:///path/to/mountpoint to name it explicitly",
+      "pattern": "^kindle://"
+    },
+    "system": {
+      "type": "boolean",
+      "default": false,
+      "description": "Allow restoring into the device's system directory. Off by default: those files describe one specific device, and overwriting them with another Kindle's settings can confuse the firmware"
+    }
+  }
+}
