@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Immich Importer Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "pattern": "^immich://[^/]+",
+      "description": "Immich server, immich://host[:port][/prefix]; https unless the host is loopback or plaintext is set"
+    },
+    "api_key": {
+      "type": "string",
+      "description": "Immich API key of the user to back up; PLAKAR_IMMICH_API_KEY in the environment takes precedence"
+    },
+    "insecure": {
+      "type": "boolean",
+      "description": "Do not verify the server's TLS certificate",
+      "default": false
+    },
+    "plaintext": {
+      "type": "boolean",
+      "description": "Talk HTTP instead of HTTPS",
+      "default": false
+    }
+  }
+}

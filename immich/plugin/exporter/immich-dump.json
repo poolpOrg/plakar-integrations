@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Immich Dump Exporter Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "pattern": "^immich\\+dump://[^/]+",
+      "description": "Immich server, immich+dump://host[:port][/prefix]; https unless the host is loopback or plaintext is set"
+    },
+    "api_key": {
+      "type": "string",
+      "description": "Immich API key of an admin, one that exists in the dump when the server is fresh; PLAKAR_IMMICH_API_KEY in the environment takes precedence"
+    },
+    "maintenance_token": {
+      "type": "string",
+      "description": "Maintenance token from the server log, needed on a server with no admin user yet; PLAKAR_IMMICH_MAINTENANCE_TOKEN in the environment takes precedence"
+    },
+    "upload_location": {
+      "type": "string",
+      "description": "The server's UPLOAD_LOCATION on this host, where /upload_location is restored"
+    },
+    "force": {
+      "type": "boolean",
+      "description": "Restore a dump whose Immich or Postgres version does not match the server",
+      "default": false
+    },
+    "restore_timeout": {
+      "type": "string",
+      "description": "How long to wait for the maintenance restore, as a Go duration",
+      "default": "1h"
+    },
+    "insecure": {
+      "type": "boolean",
+      "description": "Do not verify the server's TLS certificate",
+      "default": false
+    },
+    "plaintext": {
+      "type": "boolean",
+      "description": "Talk HTTP instead of HTTPS",
+      "default": false
+    }
+  }
+}

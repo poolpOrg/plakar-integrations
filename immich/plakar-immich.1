@@ -1,0 +1,207 @@
+.Dd November 12, 2026
+.Dt PLAKAR-IMMICH 1
+.Os
+.Sh NAME
+.Nm plakar-immich
+.Nd Plakar plugin to back up and restore an Immich user or server
+.Sh DESCRIPTION
+The
+.Nm
+plugin speaks two protocols.
+.Pp
+.Li immich://
+backs up one Immich user through the Immich API and restores the
+result into an Immich user, on the same server or another one.
+It needs an API key and nothing else, so it works against hosted
+instances.
+The backup holds the originals as plain files with their XMP sidecars,
+and the user's albums, stacks, tags, named people and face boxes as
+small JSON files keyed by the assets' SHA1 checksums.
+A restore uploads what the target does not have yet, then recreates the
+relations; assets already on the target are skipped, albums and people
+of the same name are reused.
+.Pp
+.Li immich+dump://
+backs up a whole server the way Immich recommends: a fresh database
+dump taken through the admin API, then the files of its
+.Ev UPLOAD_LOCATION
+when it is reachable from the host running plakar.
+A restore replaces the target's database through the server's own
+maintenance restore, writes the files back and regenerates the
+thumbnails; every user, API key, album, person and asset id comes back.
+See
+.Sx IMMICH+DUMP
+below.
+.Sh CONFIGURATION
+The parameters of
+.Li immich://
+are:
+.Bl -tag -width Ds
+.It Ar location
+.Li immich://host[:port][/prefix] .
+HTTPS is used unless the host is loopback.
+.It Ar api_key
+The Immich API key of the user.
+.Ev PLAKAR_IMMICH_API_KEY
+in the environment takes precedence and keeps the key off the command
+line.
+.It Ar insecure
+.Li true
+to skip the verification of the server's TLS certificate.
+.It Ar plaintext
+.Li true
+to talk HTTP instead of HTTPS.
+.El
+.Sh LAYOUT
+.Bd -literal -offset indent
+/manifest.json
+/assets/2024/07/IMG_0123.HEIC        original
+/assets/2024/07/IMG_0123.HEIC.xmp    sidecar when present
+/assets/2024/07/IMG_0123.HEIC.json   metadata, tags, people
+/albums/<name>.json
+/stacks/<primary sha1>.json
+/people/<name>.json
+.Ed
+.Pp
+Assets are filed by the local date Immich shows them under; a name
+collision in the same month gets the first eight hex digits of the
+checksum appended.
+.Sh WHAT DOES NOT COME BACK
+Assets in the locked folder are invisible to API keys and are not in
+the backup.
+Assets shared by a partner belong to the other user.
+Asset ids, creation dates, memories, shared links, the user's own API
+keys and PIN, and OCR text are not restorable through the API.
+Faces come back as manual boxes on the same named people; unnamed
+people found by machine learning are left for the target to find
+again.
+.Sh IMMICH+DUMP
+.Li immich+dump://host[:port][/prefix]
+takes an admin API key.
+The parameters are
+.Ar location ,
+.Ar api_key ,
+.Ar insecure
+and
+.Ar plaintext
+as above, and:
+.Bl -tag -width Ds
+.It Ar upload_location
+The server's
+.Ev UPLOAD_LOCATION
+as seen from this host.
+When set, the backup walks it after the dump and the restore writes it
+back.
+.Li thumbs/
+and
+.Li encoded-video/
+are left out, the server regenerates them.
+.It Ar maintenance_token
+On a restore into a server that has no admin user yet, the maintenance
+token printed in the server log.
+.Ev PLAKAR_IMMICH_MAINTENANCE_TOKEN
+in the environment takes precedence.
+.It Ar force
+.Li true
+to restore a dump made by another Immich or Postgres version, or one
+whose name carries no version.
+.It Ar dump_timeout
+How long a backup waits for the server's dump job, default
+.Li 15m .
+.It Ar restore_timeout
+How long a restore waits for the maintenance restore, default
+.Li 1h .
+.El
+.Pp
+The snapshot holds the dump as
+.Pa /backups/immich-db-backup-<ts>-v<immich>-pg<postgres>.sql.gz
+and the files under
+.Pa /upload_location/ .
+The dump comes first, so a backup taken while the server runs can at
+worst hold files the database does not know about.
+.Pp
+A backup queues the
+.Li backup-database
+job and polls the list of dumps until the new one is listed, which the
+server only does once the file is complete.
+.Pp
+A restore reads the Immich and Postgres versions from the dump's name
+and refuses to go on unless they match the target, Immich exactly and
+Postgres by major, the latter from the dumps the target made itself
+since nothing else exposes it; a target with no dump of its own skips
+that check.
+It then uploads the dump, which the server stores as
+.Li uploaded-<name> ,
+starts the
+.Li restore_database
+maintenance action with that name, and polls the maintenance status
+while the server dumps a restore point, restarts into its maintenance
+worker, restores, migrates and restarts again; the API is away for a
+couple of seconds at each restart.
+The files are then written back with the fs exporter and the
+.Li thumbnailGeneration
+job is started.
+One dump is restored per run.
+.Pp
+On a configured server an admin API key is all it takes.
+A fresh server, with no admin yet, has to be put in its restore flow
+first with
+.Li POST /api/admin/database-backups/start-restore
+or
+.Dq Restore from backup
+on its setup page; it then restarts into maintenance mode and prints
+.Li https://my.immich.app/maintenance?token=<JWT>
+in its log.
+That token, valid four hours, is the
+.Ar maintenance_token .
+Calling
+.Li start-restore
+again voids it.
+Without it the restore refuses and says so.
+The API key given to such a restore must exist in the dump: it becomes
+valid once the dump is in and is what starts the thumbnail job.
+.Sh ENVIRONMENT
+.Bl -tag -width PLAKAR_IMMICH_MAINTENANCE_TOKEN
+.It Ev PLAKAR_IMMICH_API_KEY
+The API key, ahead of the
+.Ar api_key
+parameter.
+.It Ev PLAKAR_IMMICH_MAINTENANCE_TOKEN
+The maintenance token of a fresh server, ahead of the
+.Ar maintenance_token
+parameter.
+.El
+.Sh EXAMPLES
+Back up a user:
+.Bd -literal -offset indent
+$ export PLAKAR_IMMICH_API_KEY=...
+$ plakar at /path/to/repo backup immich://photos.example.org
+.Ed
+.Pp
+Restore the snapshot into a fresh server, as another user:
+.Bd -literal -offset indent
+$ export PLAKAR_IMMICH_API_KEY=...
+$ plakar at /path/to/repo restore -to immich://127.0.0.1:2283 <snapid>
+.Ed
+.Pp
+Restore the originals alone to a directory:
+.Bd -literal -offset indent
+$ plakar at /path/to/repo restore -to /tmp/photos <snapid>
+.Ed
+.Pp
+Back up a server as a dump plus its files, with an admin key:
+.Bd -literal -offset indent
+$ export PLAKAR_IMMICH_API_KEY=...
+$ plakar at /path/to/repo backup -o upload_location=/srv/immich/library immich+dump://127.0.0.1:2283
+.Ed
+.Pp
+Restore it into a fresh server:
+.Bd -literal -offset indent
+$ curl -X POST http://127.0.0.1:2283/api/admin/database-backups/start-restore
+$ docker logs immich_server 2>&1 | grep -o 'maintenance?token=.*'
+$ export PLAKAR_IMMICH_MAINTENANCE_TOKEN=...
+$ plakar at /path/to/repo restore -to immich+dump://127.0.0.1:2283 -o upload_location=/srv/immich/library <snapid>
+.Ed
+.Sh SEE ALSO
+.Xr plakar 1 ,
+.Lk https://immich.app/docs/api

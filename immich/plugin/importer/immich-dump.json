@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Immich Dump Importer Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "pattern": "^immich\\+dump://[^/]+",
+      "description": "Immich server, immich+dump://host[:port][/prefix]; https unless the host is loopback or plaintext is set"
+    },
+    "api_key": {
+      "type": "string",
+      "description": "Immich API key of an admin; PLAKAR_IMMICH_API_KEY in the environment takes precedence"
+    },
+    "upload_location": {
+      "type": "string",
+      "description": "The server's UPLOAD_LOCATION on this host; when set, its files are backed up after the dump, thumbs/ and encoded-video/ left out"
+    },
+    "dump_timeout": {
+      "type": "string",
+      "description": "How long to wait for the backup-database job, as a Go duration",
+      "default": "15m"
+    },
+    "insecure": {
+      "type": "boolean",
+      "description": "Do not verify the server's TLS certificate",
+      "default": false
+    },
+    "plaintext": {
+      "type": "boolean",
+      "description": "Talk HTTP instead of HTTPS",
+      "default": false
+    }
+  }
+}

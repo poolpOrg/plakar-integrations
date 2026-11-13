@@ -1,0 +1,27 @@
+name: immich
+display_name: Immich
+description: Back up and restore an Immich user's photos, videos, albums, stacks, tags and people through the Immich API, or a whole server as a database dump plus its files.
+homepage: https://github.com/poolpOrg/plakar-integrations/tree/main/immich
+license: ISC
+api_version: v1.1.0
+connectors:
+- type: importer
+  executable: immich-importer
+  validator: ./plugin/importer/immich.json
+  protocols: [immich]
+  class: service
+- type: exporter
+  executable: immich-exporter
+  validator: ./plugin/exporter/immich.json
+  protocols: [immich]
+  class: service
+- type: importer
+  executable: immich-importer
+  validator: ./plugin/importer/immich-dump.json
+  protocols: [immich+dump]
+  class: service
+- type: exporter
+  executable: immich-exporter
+  validator: ./plugin/exporter/immich-dump.json
+  protocols: [immich+dump]
+  class: service
