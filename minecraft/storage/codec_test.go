@@ -172,3 +172,21 @@ func TestDecodeStringPalette(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, payload, got)
 }
+
+// A 26.x server writes palette entries with properties as {id,
+// properties}, where a property value may not even be a string.
+func TestDecodePaletteEntryForms(t *testing.T) {
+	for _, entry := range []any{
+		map[string]any{"Name": "minecraft:stone"},
+		map[string]any{"Name": "minecraft:stone", "Properties": map[string]string{"axis": "y"}},
+		map[string]any{"id": "minecraft:stone", "properties": map[string]int32{"level": 7}},
+		"minecraft:stone",
+	} {
+		var buf bytes.Buffer
+		require.NoError(t, nbt.NewEncoder(&buf).Encode(entry, ""))
+		var b blockNBT
+		_, err := nbt.NewDecoder(&buf).Decode(&b)
+		require.NoError(t, err, "%v", entry)
+		require.Equal(t, "minecraft:stone", b.Name, "%v", entry)
+	}
+}

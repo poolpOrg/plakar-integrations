@@ -75,12 +75,13 @@ type paletteNBT struct {
 }
 
 type blockNBT struct {
-	Name       string            `nbt:"Name"`
-	Properties map[string]string `nbt:"Properties,omitempty"`
+	Name string `nbt:"Name"`
 }
 
-// UnmarshalNBT accepts a palette entry as the compound we write and as
-// the bare string a 26.x server writes for a block without properties.
+// UnmarshalNBT accepts a palette entry in every form seen so far: the
+// {Name, Properties} compound we write, the bare string a 26.x server
+// writes for a block without properties, and the {id, properties}
+// compound it writes for one that has some.
 func (b *blockNBT) UnmarshalNBT(tagType byte, r nbt.DecoderReader) error {
 	var raw nbt.RawMessage
 	if err := raw.UnmarshalNBT(tagType, r); err != nil {
@@ -88,18 +89,20 @@ func (b *blockNBT) UnmarshalNBT(tagType byte, r nbt.DecoderReader) error {
 	}
 	switch tagType {
 	case nbt.TagString:
-		b.Properties = nil
 		return raw.Unmarshal(&b.Name)
 	case nbt.TagCompound:
-		var c struct {
-			Name       string            `nbt:"Name"`
-			Properties map[string]string `nbt:"Properties"`
-		}
+		// {Name, Properties} up to 1.21, {id, properties} from 26.x on;
+		// only the name matters to the codec
+		var c map[string]nbt.RawMessage
 		if err := raw.Unmarshal(&c); err != nil {
 			return err
 		}
-		b.Name, b.Properties = c.Name, c.Properties
-		return nil
+		for _, key := range []string{"Name", "id", ""} {
+			if v, ok := c[key]; ok && v.Type == nbt.TagString {
+				return v.Unmarshal(&b.Name)
+			}
+		}
+		return fmt.Errorf("palette entry without a name: %s", raw.String())
 	default:
 		return fmt.Errorf("palette entry of type %d", tagType)
 	}
