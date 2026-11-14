@@ -9,6 +9,7 @@ all: build
 build:
 	${GO} build -v -o minecraft-importer${EXT} ./plugin/importer
 	${GO} build -v -o minecraft-exporter${EXT} ./plugin/exporter
+	${GO} build -v -o minecraft-storage${EXT}  ./plugin/storage
 
 test:
 	${GO} vet ./...
@@ -29,6 +30,6 @@ install: package
 reinstall: uninstall install
 
 clean:
-	rm -f minecraft-importer minecraft-exporter minecraft_*.ptar
+	rm -f minecraft-importer minecraft-exporter minecraft-storage minecraft_*.ptar
 
 .PHONY: all build test check package uninstall install reinstall clean

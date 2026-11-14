@@ -6,6 +6,7 @@ require (
 	github.com/PlakarKorp/integration-sdk v1.1.4
 	github.com/PlakarKorp/integrations/fs v1.1.11
 	github.com/PlakarKorp/kloset v1.1.16-rc.2
+	github.com/Tnze/go-mc v1.20.2
 	github.com/stretchr/testify v1.12.1
 	golang.org/x/sys v0.49.0
 )

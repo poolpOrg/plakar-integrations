@@ -23,9 +23,11 @@ Restores refuse to write into a directory where a server is running.
 
 - **importer** backs up the server directory
 - **exporter** restores into it
+- **storage** keeps a kloset in the server's world, as terrain
 
-Both are the fs connectors with the server-side care added, so excludes,
-permissions, ownership and times behave the same.
+The importer and exporter are the fs connectors with the server-side
+care added, so excludes, permissions, ownership and times behave the
+same.  The storage connector is described below.
 
 ## Enabling RCON
 
@@ -117,9 +119,73 @@ server with the saves paused, restore refused while it ran, restore of
 the snapshot into a new directory and a server booted from it with the
 same seed and world.
 
+The same server on a world made by the storage connector: it booted on
+the store's `level.dat`, moved the region files to its 26.3 layout,
+served the terrain as the blocks the store wrote, relit and rewrote
+the chunks it loaded, and every snapshot still verified afterwards.
+
 ## Building
 
 ```bash
 $ make build
 $ make install     # packages and installs it in the local plakar
 ```
+
+## A kloset as a world
+
+`plakar at minecraft:///srv/minecraft create` makes a kloset in the world
+of that server directory, the one `level-name` in `server.properties`
+names, `world` when there is none.  Packfiles and states are written as
+terrain into the region files: every column of the world carries two
+bytes, a nibble of height as stone, then a layer of stained glass,
+terracotta and concrete whose sixteen colours carry the rest.  Locks
+and the kloset configuration are plain files under `<world>/plakar`.
+
+A world created by the store comes with a `level.dat` for a void
+overworld in adventure mode where nothing ticks, burns, spawns, spreads
+or snows.  To keep players from changing a byte, set in
+`server.properties`:
+
+```
+gamemode=adventure
+force-gamemode=true
+enable-command-block=false
+```
+
+and op nobody.  Kloset verifies every read, so a change that gets
+through anyway is an error, not a wrong restore.
+
+The server must be stopped while the store writes: backups, deletes and
+maintenance are refused while a server holds the world, reads are not.
+A server in a container on Docker Desktop holds that lock where the
+host cannot see it (see Limitations), so there the refusal does not
+happen: stop the container yourself before writing.
+
+A running server fills the void around what players visit with empty
+chunks of its own, sometimes in region files next to the kloset's;
+the store ignores those and never reuses their spot.
+
+```bash
+# a kloset in a server directory, then a backup into it
+$ plakar at minecraft:///srv/minecraft create
+$ plakar at minecraft:///srv/minecraft backup /home
+
+# start the server, walk across /home
+
+# read it back, the server up or down
+$ plakar at minecraft:///srv/minecraft ls
+$ plakar at minecraft:///srv/minecraft cat <snapid>:/home/notes.txt
+$ plakar at minecraft:///srv/minecraft ui
+```
+
+A region file holds 511 KiB of kloset data and takes a few MiB on
+disk, so count on roughly ten times the kloset size in region files.
+The world format written is 1.20.1 and newer servers upgrade it on
+load; the store only reads block names, which an upgrade keeps.  A
+26.3 server moves the region files under
+`dimensions/minecraft/overworld` the first time it opens the world,
+and the store follows them there.
+
+Storage:
+
+- `location` (required): `minecraft://<server directory>`
