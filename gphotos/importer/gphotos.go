@@ -454,7 +454,7 @@ func (g *Importer) baseURL(sessionID, id string, refresh bool) (string, error) {
 	defer g.mu.Unlock()
 
 	cache := g.baseURLs[sessionID]
-	if cache == nil || (refresh && time.Since(cache.fetched) > g.refreshAfter) {
+	if cache == nil || (refresh && time.Since(cache.fetched) >= g.refreshAfter) {
 		items, err := g.api.listAllMediaItems(g.ctx, sessionID)
 		if err != nil {
 			return "", err

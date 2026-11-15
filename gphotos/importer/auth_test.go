@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"sync"
 	"testing"
 	"time"
@@ -178,7 +179,7 @@ func TestConsentFlow(t *testing.T) {
 	if onDisk.RefreshToken != "rt-new" {
 		t.Errorf("saved token = %s", saved)
 	}
-	if info, _ := os.Stat(tokenFile); info.Mode().Perm()&0077 != 0 {
+	if info, _ := os.Stat(tokenFile); runtime.GOOS != "windows" && info.Mode().Perm()&0077 != 0 {
 		t.Errorf("token file should not be group/world readable: %v", info.Mode())
 	}
 }
