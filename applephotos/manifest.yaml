@@ -1,0 +1,14 @@
+name: applephotos
+display_name: Apple Photos
+description: Back up the photos and videos of an Apple Photos library.
+homepage: https://github.com/PlakarKorp/integrations/tree/main/applephotos
+license: ISC
+api_version: v1.1.0
+tier: official
+contact: mailto:help@plakar.io
+connectors:
+- type: importer
+  executable: applephotos-importer
+  validator: ./plugin/importer/applephotos.json
+  protocols: [applephotos]
+  class: file-storage

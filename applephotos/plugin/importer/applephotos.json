@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plakar Apple Photos Importer Connector Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Apple Photos location URI: applephotos:// for the default library, or applephotos:///path/to/Library.photoslibrary",
+      "pattern": "^applephotos://"
+    },
+    "layout": {
+      "type": "string",
+      "enum": ["date", "flat"],
+      "default": "date",
+      "description": "Snapshot layout: 'date' files items under /YYYY/MM by capture date, 'flat' puts everything at the root"
+    }
+  }
+}
