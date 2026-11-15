@@ -1,0 +1,14 @@
+name: gphotos
+display_name: Google Photos
+description: Back up photos and videos picked from a Google Photos library.
+homepage: https://github.com/poolpOrg/plakar-integrations/tree/integration/gphotos/gphotos
+license: ISC
+api_version: v1.1.0
+tier: official
+contact: mailto:help@plakar.io
+connectors:
+- type: importer
+  executable: gphotos-importer
+  validator: ./plugin/importer/gphotos.json
+  protocols: [gphotos]
+  class: service
